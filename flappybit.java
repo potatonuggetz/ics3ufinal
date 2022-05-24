@@ -11,7 +11,7 @@ public class flappybit extends JPanel {
     
 
     public flappybit(){
-        setPreferredSize(new Dimension(1200,800));
+        setPreferredSize(new Dimension(400,600));
 		setBackground(new Color(100,255,255));
     }
 
