@@ -17,4 +17,14 @@ public class filereader {
         }
         p.close();
     }
+    public static int[] pullScores() throws IOException{
+        int[]scores = new int[3];
+        Scanner sc=new Scanner(new File("scores.txt"));
+        for(int i=0;i<3;i++){
+            if(!sc.hasNextInt()) scores[i]=0;
+            else scores[i]=sc.nextInt();
+        }
+        sc.close();
+        return scores;
+    }
 }
