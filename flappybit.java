@@ -33,13 +33,22 @@ public class flappybit extends JPanel implements MouseListener{
     }
 
     public void paintComponent(Graphics g){
-        g.setFont(new Font("Calibri",Font.BOLD,32));
         if(gameState==0){
             g.drawImage(mainMenu,0,0,null);
         }
         else if(gameState==1) System.out.println("play");
-        else if(gameState==2) System.out.println("settings");
+        else if(gameState==2) {
+            g.setFont(new Font("Calibri",Font.BOLD,19));
+            super.paintComponent(g);
+            g.drawImage(tempMenu,0,0,null);
+            if(shootConfirm) g.setColor(new Color(0,255,0));
+            else g.setColor(new Color(255,0,0));
+            g.fillRect(100,200,200,75);
+            g.setColor(new Color(0,0,0));
+            helper.drawCenteredString(g,"Confirm shot with Enter",100,200,300,275);
+        }
         else if(gameState==3) {
+            g.setFont(new Font("Calibri",Font.BOLD,32));
             try {
                 scores=filereader.pullScores();
             } catch (IOException e) {}
@@ -74,6 +83,12 @@ public class flappybit extends JPanel implements MouseListener{
             } else if(mouseX>=100&&mouseX<=300&&mouseY<=525&&mouseY>=450){
                 //clicked high score
                 gameState=3;
+                paintComponent(this.getGraphics());
+            }
+        }else if(gameState==2){
+            if(mouseX>=100&&mouseX<=300&&mouseY<=275&&mouseY>=200){
+                //clicked play
+                shootConfirm=!shootConfirm;
                 paintComponent(this.getGraphics());
             }
         }
