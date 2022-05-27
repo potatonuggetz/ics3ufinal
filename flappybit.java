@@ -7,10 +7,12 @@ import java.io.*;
 
 public class flappybit extends JPanel implements MouseListener{
 
+    public static boolean shootConfirm=false;
     public static int mouseX;
     public static int mouseY;
     public static int difficulty=0;
     public static int gameState=0;
+    public static int scores[]=new int[3];
     /*gamestate 0: main menu
     * gamestate 1: play menu
     * gamestate 2: settings menu
@@ -18,6 +20,7 @@ public class flappybit extends JPanel implements MouseListener{
     */
 
     public static BufferedImage mainMenu;    
+    public static BufferedImage tempMenu;    
 
     public flappybit(){
         setPreferredSize(new Dimension(400,600));
@@ -25,19 +28,31 @@ public class flappybit extends JPanel implements MouseListener{
         addMouseListener(this);
         try{
             mainMenu=ImageIO.read(new File("mainmenu.png"));
+            tempMenu=ImageIO.read(new File("tempmenu.png"));
         }catch(Exception e){};
     }
 
     public void paintComponent(Graphics g){
+        g.setFont(new Font("Calibri",Font.BOLD,32));
         if(gameState==0){
             g.drawImage(mainMenu,0,0,null);
-        }else if(gameState==1) System.out.println("play");
+        }
+        else if(gameState==1) System.out.println("play");
         else if(gameState==2) System.out.println("settings");
-        else if(gameState==3) System.out.println("high score");
+        else if(gameState==3) {
+            try {
+                scores=filereader.pullScores();
+            } catch (IOException e) {}
+            super.paintComponent(g);
+            g.drawImage(tempMenu,0,0,null);
+            helper.drawCenteredString(g,"Easy: "+scores[0],100,200,300,275);
+            helper.drawCenteredString(g,"Medium: "+scores[1],100,325,300,400);
+            helper.drawCenteredString(g,"Hard: "+scores[2],100,450,300,525);
+        }
     }
 
     public static void main(String[] args) {
-		JFrame myFrame = new JFrame("Flappy Bit");
+        JFrame myFrame = new JFrame("Flappy Bit");
 		flappybit myPanel=new flappybit();
 		myFrame.add(myPanel);
 		myFrame.pack();

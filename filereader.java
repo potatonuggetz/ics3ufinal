@@ -9,7 +9,7 @@ public class filereader {
             if(!sc.hasNextInt()) scores[i]=0;
             else scores[i]=sc.nextInt();
         }
-        scores[x]=y;
+        if(y>scores[x]) scores[x]=y;
         sc.close();
         PrintWriter p=new PrintWriter(new FileWriter("scores.txt"));
         for(int i=0;i<3;i++){
