@@ -27,4 +27,33 @@ public class filereader {
         sc.close();
         return scores;
     }
+    public static boolean pullSetting(int x) throws IOException{
+        boolean[] settings = new boolean[3];
+        Scanner sc=new Scanner(new File("settings.txt"));
+
+        for(int i=0;i<3;i++){
+            if(sc.hasNextBoolean()){
+                settings[i]=sc.nextBoolean();
+            } else settings[i]=false;
+        }
+        sc.close();
+        return settings[x];
+    }
+
+    public static void pushSetting(int x,boolean y) throws IOException{
+        Scanner sc=new Scanner(new File("settings.txt"));
+        boolean[] settings = new boolean[3];
+        for(int i=0;i<3;i++){
+            if(sc.hasNextInt()){
+                settings[i]=sc.nextBoolean();
+            } else settings[i]=false;
+        }
+        settings[x]=y;
+        sc.close();
+        PrintWriter p=new PrintWriter(new FileWriter("settings.txt"));
+        for(int i=0;i<3;i++){
+            p.println(settings[i]);
+        }
+        p.close();
+    }
 }

@@ -29,6 +29,7 @@ public class flappybit extends JPanel implements MouseListener{
         try{
             mainMenu=ImageIO.read(new File("mainmenu.png"));
             tempMenu=ImageIO.read(new File("tempmenu.png"));
+            shootConfirm=filereader.pullSetting(0);
         }catch(Exception e){};
     }
 
@@ -90,6 +91,9 @@ public class flappybit extends JPanel implements MouseListener{
             if(mouseX>=100&&mouseX<=300&&mouseY<=275&&mouseY>=200){
                 //clicked shootconfirm
                 shootConfirm=!shootConfirm;
+                try{
+                    filereader.pushSetting(0,shootConfirm);
+                } catch(Exception e1){};
                 paintComponent(this.getGraphics());
             }
             else if(mouseX>=0&&mouseX<=75&&mouseY<=600&&mouseY>=525){
