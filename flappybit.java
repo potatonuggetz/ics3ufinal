@@ -34,6 +34,7 @@ public class flappybit extends JPanel implements MouseListener{
 
     public void paintComponent(Graphics g){
         if(gameState==0){
+            super.paintComponent(g);
             g.drawImage(mainMenu,0,0,null);
         }
         else if(gameState==1) System.out.println("play");
@@ -87,8 +88,19 @@ public class flappybit extends JPanel implements MouseListener{
             }
         }else if(gameState==2){
             if(mouseX>=100&&mouseX<=300&&mouseY<=275&&mouseY>=200){
-                //clicked play
+                //clicked shootconfirm
                 shootConfirm=!shootConfirm;
+                paintComponent(this.getGraphics());
+            }
+            else if(mouseX>=0&&mouseX<=75&&mouseY<=600&&mouseY>=525){
+                //clicked back
+                gameState=0;
+                paintComponent(this.getGraphics());
+            }
+        }else if(gameState==3){
+            if(mouseX>=0&&mouseX<=75&&mouseY<=600&&mouseY>=525){
+                //clicked back
+                gameState=0;
                 paintComponent(this.getGraphics());
             }
         }
