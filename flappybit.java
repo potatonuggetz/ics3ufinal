@@ -20,7 +20,8 @@ public class flappybit extends JPanel implements MouseListener{
     */
 
     public static BufferedImage mainMenu;    
-    public static BufferedImage tempMenu;    
+    public static BufferedImage tempMenu;
+    public static BufferedImage playfield;      
 
     public flappybit(){
         setPreferredSize(new Dimension(400,600));
@@ -29,6 +30,7 @@ public class flappybit extends JPanel implements MouseListener{
         try{
             mainMenu=ImageIO.read(new File("mainmenu.png"));
             tempMenu=ImageIO.read(new File("tempmenu.png"));
+            playfield=ImageIO.read(new File("playfield.png"));
             shootConfirm=filereader.pullSetting(0);
         }catch(Exception e){};
     }
@@ -38,7 +40,10 @@ public class flappybit extends JPanel implements MouseListener{
             super.paintComponent(g);
             g.drawImage(mainMenu,0,0,null);
         }
-        else if(gameState==1) System.out.println("play");
+        else if(gameState==1) {
+            super.paintComponent(g);
+            g.drawImage(playfield,0,0,null);
+        }
         else if(gameState==2) {
             g.setFont(new Font("Calibri",Font.BOLD,19));
             super.paintComponent(g);
