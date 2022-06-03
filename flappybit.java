@@ -21,12 +21,14 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
     * gamestate 3: high score menu
     * gamestate 4: difficulty menu
     * gamestate 5: ingame
+    * gamestate 6: difficulty help menu
     */
 
     public static BufferedImage mainMenu;    
     public static BufferedImage tempMenu;
     public static BufferedImage tempMenuHelp;
-    public static BufferedImage playfield;      
+    public static BufferedImage playfield;
+    public static BufferedImage helpMenu;      
 
     public flappybit(){
         setPreferredSize(new Dimension(400,600));
@@ -37,6 +39,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             tempMenu=ImageIO.read(new File("tempmenu.png"));
             tempMenuHelp=ImageIO.read(new File("tempmenuhelp.png"));
             playfield=ImageIO.read(new File("playfield.png"));
+            helpMenu=ImageIO.read(new File("helpmenu.png"));
             shootConfirm=filereader.pullSetting(0);
         }catch(Exception e){};
         this.setFocusable(true);
@@ -99,6 +102,20 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             helper.drawCenteredString(g,"Medium"+difficulty,100,325,300,400);
             helper.drawCenteredString(g,"Hard"+difficulty,100,450,300,525);
         }
+        else if(gameState==6) {
+            g.setFont(new Font("Calibri",Font.BOLD,24));
+            super.paintComponent(g);
+            g.drawImage(helpMenu,0,0,null);
+            g.setColor(new Color(0,0,0));
+            helper.drawCenteredString(g,"On Easy difficulty, a counter shows ",100,200,300,225);
+            helper.drawCenteredString(g,"the current number you have inputted",100,225,300,250);
+            helper.drawCenteredString(g,"(in the target base), as well as a",100,250,300,275);
+            helper.drawCenteredString(g,"helper that shows the value of a digit.",100,275,300,300);
+            helper.drawCenteredString(g,"On Medium difficulty, a helper",100,325,300,362);
+            helper.drawCenteredString(g,"shows the value of each digit.",100,362,300,400);
+            helper.drawCenteredString(g,"On Hard difficulty, you get no",100,425,300,462);
+            helper.drawCenteredString(g,"helping tools. Good luck!",100,462,300,500);
+        }
     }
 
     public void run() {
@@ -149,12 +166,12 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 gameState=4;
                 paintComponent(this.getGraphics());
             } else if(mouseX>=100&&mouseX<=300&&mouseY<=400&&mouseY>=325){
-                //clicked medium
+                //clicked hexadecimal
                 gamemode=1;
                 gameState=4;
                 paintComponent(this.getGraphics());
             } else if(mouseX>=100&&mouseX<=300&&mouseY<=525&&mouseY>=450){
-                //clicked hard
+                //clicked decimal
                 gamemode=2;
                 gameState=4;
                 paintComponent(this.getGraphics());
@@ -198,6 +215,16 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 //clicked hard
                 difficulty=2;
                 gameState=5;
+                paintComponent(this.getGraphics());
+            } else if(mouseX>=325&&mouseX<=400&&mouseY<=75&&mouseY>=0){
+                //clicked help
+                gameState=6;
+                paintComponent(this.getGraphics());
+            }
+        }else if(gameState==6){
+            if(mouseX>=0&&mouseX<=75&&mouseY<=600&&mouseY>=525){
+                //clicked back
+                gameState=4;
                 paintComponent(this.getGraphics());
             }
         }
