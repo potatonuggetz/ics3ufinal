@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.ArrayList;
 
 public class flappybit extends JPanel implements Runnable,KeyListener,MouseListener{
 
@@ -11,10 +12,12 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
     public static int mouseX;
     public static int mouseY;
     public static int difficulty=0;
+    public static int score=0;
     //which base the game will be played in
     public static int gamemode=0;
     public static int gameState=0;
     public static int scores[]=new int[3];
+    public static ArrayList<Bug> bugs=new ArrayList<Bug>();
     /*gamestate 0: main menu
     * gamestate 1: base selection menu
     * gamestate 2: settings menu
@@ -28,6 +31,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
     public static BufferedImage tempMenu;
     public static BufferedImage tempMenuHelp;
     public static BufferedImage playfield;
+    public static BufferedImage bug;     
     public static BufferedImage helpMenu;      
 
     public flappybit(){
@@ -40,6 +44,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             tempMenuHelp=ImageIO.read(new File("tempmenuhelp.png"));
             playfield=ImageIO.read(new File("playfield.png"));
             helpMenu=ImageIO.read(new File("helpmenu.png"));
+            bug=ImageIO.read(new File("bug.png"));
             shootConfirm=filereader.pullSetting(0);
         }catch(Exception e){};
         this.setFocusable(true);
@@ -96,11 +101,12 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
         else if(gameState==5) {
             g.setFont(new Font("Calibri",Font.BOLD,48));
             super.paintComponent(g);
-            g.drawImage(playfield,0,0,null);
+            //g.drawImage(playfield,0,0,null);
             g.setColor(new Color(0,0,0));
-            helper.drawCenteredString(g,"Easy"+difficulty,100,200,300,275);
-            helper.drawCenteredString(g,"Medium"+difficulty,100,325,300,400);
-            helper.drawCenteredString(g,"Hard"+difficulty,100,450,300,525);
+            for(Bug i:bugs){
+                g.drawImage(bug,i.xPos,i.yPos,null);
+            }
+            
         }
         else if(gameState==6) {
             g.setFont(new Font("Calibri",Font.BOLD,24));
@@ -118,10 +124,17 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
         }
     }
 
+    public static void bugUpdate(){
+        for(Bug i:bugs){
+            i.update();
+        }
+    }
+
     public void run() {
         while(true) {
 			repaint();
-			try {
+            bugUpdate();
+            try {
 				Thread.sleep(100);
 			}
 			catch(Exception e) {
@@ -136,7 +149,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
 		myFrame.add(myPanel);
 		myFrame.pack();
 		myFrame.setVisible(true);
-	}
+    }
 
     public void mousePressed(MouseEvent e) {
         mouseX=e.getX();
