@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class flappybit extends JPanel implements Runnable,KeyListener,MouseListener{
 
@@ -13,11 +14,15 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
     public static int mouseY;
     public static int difficulty=0;
     public static int score=0;
+    public static int spawnInterval=0;
+    public static int lastSpawn=0;
+    public static int currentGrav=1;
     //which base the game will be played in
     public static int gamemode=0;
     public static int gameState=0;
     public static int scores[]=new int[3];
     public static ArrayList<Bug> bugs=new ArrayList<Bug>();
+    static Random rand=new Random();
     /*gamestate 0: main menu
     * gamestate 1: base selection menu
     * gamestate 2: settings menu
@@ -105,6 +110,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             g.setColor(new Color(0,0,0));
             for(Bug i:bugs){
                 g.drawImage(bug,i.xPos,i.yPos,null);
+                helper.drawCenteredString(g,i.label,i.xPos,i.yPos,i.xPos+50,i.yPos+50);
             }
             
         }
@@ -128,6 +134,13 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
         for(Bug i:bugs){
             i.update();
         }
+        lastSpawn++;
+        spawnInterval=25;
+        if(spawnInterval==lastSpawn){
+            bugs.add(new Bug(rand.nextInt(351),0,rand.nextInt(256),false,currentGrav));
+            lastSpawn=0;
+        }
+        System.out.println(lastSpawn);
     }
 
     public void run() {
