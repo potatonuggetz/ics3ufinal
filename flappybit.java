@@ -112,14 +112,17 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             //g.drawImage(playfield,0,0,null);
             g.setColor(new Color(0,0,0));
             for(Bug i:bugs){
-                g.drawImage(bug,i.xPos,i.yPos,null);
-                helper.drawCenteredString(g,i.str,i.xPos,i.yPos,i.xPos+50,i.yPos+50);
+                if(!i.dead){
+                    g.drawImage(bug,i.xPos,i.yPos,null);
+                    helper.drawCenteredString(g,i.str,i.xPos,i.yPos,i.xPos+50,i.yPos+50);
+                }
             }
             String tempstring="";
             for(int i=7;i>=0;i--){
                 tempstring+=bitArr[i]?'1':'0';
             }
             helper.drawCenteredString(g,tempstring,0,500,400,600);
+            helper.drawCenteredString(g, ""+activeNumber, 0, 400, 400, 500);
         }
         else if(gameState==6) {
             g.setFont(new Font("Calibri",Font.BOLD,24));
@@ -271,11 +274,20 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 if(!bitArr[7-(e.getKeyChar()-'1')]){
                     activeNumber+=Math.pow(2,7-(e.getKeyChar()-'1'));
                     bitArr[7-(e.getKeyChar()-'1')]=true;
-                    repaint();
+                    //repaint();
                 }else{
-                    activeNumber-=Math.pow(2,7-e.getKeyChar()-'1');
+                    activeNumber-=Math.pow(2,7-(e.getKeyChar()-'1'));
                     bitArr[7-(e.getKeyChar()-'1')]=false;
-                    repaint();
+                    //repaint();
+                }
+                for(Bug i:bugs){
+                    if(i.label==activeNumber&&!i.dead){
+                        i.dead=true;
+                        activeNumber=0;
+                        for(int j=0;j<8;j++){
+                            bitArr[j]=false;
+                        }
+                    }
                 }
             }
         }        
