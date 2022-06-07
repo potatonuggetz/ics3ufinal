@@ -22,6 +22,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
     public static int gameState=0;
     public static int scores[]=new int[3];
     public static ArrayList<Bug> bugs=new ArrayList<Bug>();
+    public static Bug tempBug;
     static Random rand=new Random();
     /*gamestate 0: main menu
     * gamestate 1: base selection menu
@@ -104,13 +105,13 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             helper.drawCenteredString(g,"Hard",100,450,300,525);
         }
         else if(gameState==5) {
-            g.setFont(new Font("Calibri",Font.BOLD,48));
+            g.setFont(new Font("Calibri",Font.BOLD,24));
             super.paintComponent(g);
             //g.drawImage(playfield,0,0,null);
             g.setColor(new Color(0,0,0));
             for(Bug i:bugs){
                 g.drawImage(bug,i.xPos,i.yPos,null);
-                helper.drawCenteredString(g,i.label,i.xPos,i.yPos,i.xPos+50,i.yPos+50);
+                helper.drawCenteredString(g,i.str,i.xPos,i.yPos,i.xPos+50,i.yPos+50);
             }
             
         }
@@ -137,10 +138,12 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
         lastSpawn++;
         spawnInterval=25;
         if(spawnInterval==lastSpawn){
-            bugs.add(new Bug(rand.nextInt(351),0,rand.nextInt(256),false,currentGrav));
+            tempBug = new Bug(rand.nextInt(351),0,rand.nextInt(256),false,currentGrav,"arknights");
+            tempBug.getLabel(gamemode);
+            bugs.add(tempBug);
             lastSpawn=0;
         }
-        System.out.println(lastSpawn);
+        //System.out.println(lastSpawn);
     }
 
     public void run() {
@@ -188,17 +191,17 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 paintComponent(this.getGraphics());
             }else if(mouseX>=100&&mouseX<=300&&mouseY<=275&&mouseY>=200){
                 //clicked octal
-                gamemode=0;
+                gamemode=8;
                 gameState=4;
                 paintComponent(this.getGraphics());
             } else if(mouseX>=100&&mouseX<=300&&mouseY<=400&&mouseY>=325){
                 //clicked hexadecimal
-                gamemode=1;
+                gamemode=16;
                 gameState=4;
                 paintComponent(this.getGraphics());
             } else if(mouseX>=100&&mouseX<=300&&mouseY<=525&&mouseY>=450){
                 //clicked decimal
-                gamemode=2;
+                gamemode=10;
                 gameState=4;
                 paintComponent(this.getGraphics());
             }
