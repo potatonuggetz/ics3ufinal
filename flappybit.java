@@ -23,6 +23,8 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
     public static int scores[]=new int[3];
     public static ArrayList<Bug> bugs=new ArrayList<Bug>();
     public static Bug tempBug;
+    public static int activeNumber=0;
+    public static boolean[]bitArr=new boolean[8];
     static Random rand=new Random();
     /*gamestate 0: main menu
     * gamestate 1: base selection menu
@@ -113,7 +115,11 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 g.drawImage(bug,i.xPos,i.yPos,null);
                 helper.drawCenteredString(g,i.str,i.xPos,i.yPos,i.xPos+50,i.yPos+50);
             }
-            
+            String tempstring="";
+            for(int i=7;i>=0;i--){
+                tempstring+=bitArr[i]?'1':'0';
+            }
+            helper.drawCenteredString(g,tempstring,0,500,400,600);
         }
         else if(gameState==6) {
             g.setFont(new Font("Calibri",Font.BOLD,24));
@@ -259,6 +265,26 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
         }
     }
 
+    public void keyTyped(KeyEvent e) {
+        if(gameState==5){
+            if(e.getKeyChar()>='1'&&e.getKeyChar()<='8'){
+                if(!bitArr[7-(e.getKeyChar()-'1')]){
+                    activeNumber+=Math.pow(2,7-(e.getKeyChar()-'1'));
+                    bitArr[7-(e.getKeyChar()-'1')]=true;
+                    repaint();
+                }else{
+                    activeNumber-=Math.pow(2,7-e.getKeyChar()-'1');
+                    bitArr[7-(e.getKeyChar()-'1')]=false;
+                    repaint();
+                }
+            }
+        }        
+    }
+
+    public void mouseExited(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
     
     public void mouseClicked(MouseEvent e) {      
     }
@@ -272,18 +298,6 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
         // TODO Auto-generated method stub
         
     }
