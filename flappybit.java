@@ -122,7 +122,10 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 tempstring+=bitArr[i]?'1':'0';
             }
             helper.drawCenteredString(g,tempstring,0,500,400,600);
-            helper.drawCenteredString(g, ""+activeNumber, 0, 400, 400, 500);
+            if(difficulty==0)helper.drawCenteredString(g, ""+activeNumber, 0, 400, 400, 500);
+            helper.drawCenteredString(g, ""+score, 350, 0, 400, 50);
+            g.setColor(new Color(255,0,0));
+            g.drawLine(0, 500, 400, 500);
         }
         else if(gameState==6) {
             g.setFont(new Font("Calibri",Font.BOLD,24));
@@ -138,15 +141,40 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             helper.drawCenteredString(g,"On Hard difficulty, you get no",100,425,300,462);
             helper.drawCenteredString(g,"helping tools. Good luck!",100,462,300,500);
         }
+        else if(gameState==7){
+            //game over screen
+            g.setFont(new Font("Calibri",Font.BOLD,48));
+            g.setColor(new Color(0,0,0));
+            super.paintComponent(g);
+            helper.drawCenteredString(g, "Game Over", 0, 0, 400, 150);
+            helper.drawCenteredString(g, "Score: "+score, 0, 150, 400, 300);
+            g.setFont(new Font("Calibri",Font.BOLD,24));
+            helper.drawCenteredString(g, "Click anywhere to continue", 0, 300, 400, 600);
+            resetGame();
+        }
+    }
+
+    public static void resetGame(){
+        bugs=new ArrayList<Bug>();
+        currentGrav=0;
+        lastSpawn=0;
+        spawnInterval=0;
     }
 
     public static void bugUpdate(){
         for(Bug i:bugs){
             i.update();
+            if(i.yPos>=450&&!i.dead){
+                gameState=7;
+            }
         }
-        lastSpawn++;
         spawnInterval=25;
-        if(spawnInterval==lastSpawn){
+        if(score>=20) currentGrav=2;
+        if(score>=30) spawnInterval=20;
+        if(score>=40) spawnInterval=15;
+        if(score>=50) spawnInterval=10;
+        lastSpawn++;
+        if(spawnInterval<=lastSpawn){
             tempBug = new Bug(rand.nextInt(351),0,rand.nextInt(256),false,currentGrav,"arknights");
             tempBug.getLabel(gamemode);
             bugs.add(tempBug);
@@ -158,7 +186,9 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
     public void run() {
         while(true) {
 			repaint();
-            bugUpdate();
+            if(gameState==5){
+                bugUpdate();
+            }
             try {
 				Thread.sleep(100);
 			}
@@ -265,6 +295,9 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 gameState=4;
                 paintComponent(this.getGraphics());
             }
+        }else if(gameState==7){
+            gameState=0;
+            paintComponent(this.getGraphics());
         }
     }
 
@@ -274,14 +307,15 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 if(!bitArr[7-(e.getKeyChar()-'1')]){
                     activeNumber+=Math.pow(2,7-(e.getKeyChar()-'1'));
                     bitArr[7-(e.getKeyChar()-'1')]=true;
-                    //repaint();
+                    repaint();
                 }else{
                     activeNumber-=Math.pow(2,7-(e.getKeyChar()-'1'));
                     bitArr[7-(e.getKeyChar()-'1')]=false;
-                    //repaint();
+                    repaint();
                 }
                 for(Bug i:bugs){
                     if(i.label==activeNumber&&!i.dead){
+                        score++;
                         i.dead=true;
                         activeNumber=0;
                         for(int j=0;j<8;j++){
@@ -289,6 +323,9 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                         }
                     }
                 }
+            }
+            if(e.getKeyChar()=='/'){
+                score+=10;
             }
         }        
     }
