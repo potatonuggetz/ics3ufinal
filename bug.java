@@ -16,7 +16,7 @@ public class Bug {
     }
 
     public void update(){
-        yPos+=gravity;
+        if(!dead) yPos+=gravity;
         //toggle sprite
     }
     public void getLabel(int x){

@@ -47,6 +47,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
 		setBackground(new Color(100,255,255));
         addMouseListener(this);
         try{
+            //importing all the images
             mainMenu=ImageIO.read(new File("mainmenu.png"));
             tempMenu=ImageIO.read(new File("tempmenu.png"));
             tempMenuHelp=ImageIO.read(new File("tempmenuhelp.png"));
@@ -63,10 +64,12 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
 
     public void paintComponent(Graphics g){
         if(gameState==0){
+            //draw the main menu screen
             super.paintComponent(g);
             g.drawImage(mainMenu,0,0,null);
         }
         else if(gameState==1) {
+            //this is after user clicks play, draws the different bases the user can play in
             g.setFont(new Font("Calibri",Font.BOLD,32));
             super.paintComponent(g);
             g.drawImage(tempMenu,0,0,null);
@@ -76,6 +79,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             helper.drawCenteredString(g,"Decimal",100,450,300,525);
         }
         else if(gameState==2) {
+            //settings menu, might honestly get rid of this but i think i might add more settings
             g.setFont(new Font("Calibri",Font.BOLD,19));
             super.paintComponent(g);
             g.drawImage(tempMenu,0,0,null);
@@ -86,6 +90,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             helper.drawCenteredString(g,"Confirm shot with Enter",100,200,300,275);
         }
         else if(gameState==3) {
+            //high score menu, shows high scores in different difficulties
             g.setFont(new Font("Calibri",Font.BOLD,32));
             try {
                 scores=filereader.pullScores();
@@ -98,6 +103,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             helper.drawCenteredString(g,"Hard: "+scores[2],100,450,300,525);
         }
         else if(gameState==4) {
+            //after base selection, the difficulty menu (shows different amounts of helper guides)
             g.setFont(new Font("Calibri",Font.BOLD,48));
             super.paintComponent(g);
             g.drawImage(tempMenuHelp,0,0,null);
@@ -107,27 +113,32 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             helper.drawCenteredString(g,"Hard",100,450,300,525);
         }
         else if(gameState==5) {
+            //actual gameplay
             g.setFont(new Font("Calibri",Font.BOLD,24));
             super.paintComponent(g);
             //g.drawImage(playfield,0,0,null);
             g.setColor(new Color(0,0,0));
+            //loops through arraylist of all bugs, and draws its current position
             for(Bug i:bugs){
                 if(!i.dead){
                     g.drawImage(bug,i.xPos,i.yPos,null);
                     helper.drawCenteredString(g,i.str,i.xPos,i.yPos,i.xPos+50,i.yPos+50);
                 }
             }
+            //creates the string at the bottom with the number display
             String tempstring="";
             for(int i=7;i>=0;i--){
                 tempstring+=bitArr[i]?'1':'0';
             }
+            //draws the binary string and the death line
             helper.drawCenteredString(g,tempstring,0,500,400,600);
-            if(difficulty==0)helper.drawCenteredString(g, ""+activeNumber, 0, 400, 400, 500);
+            if(difficulty==0)helper.drawCenteredString(g, Integer.toString(activeNumber,gamemode).toUpperCase(), 0, 400, 400, 500);
             helper.drawCenteredString(g, ""+score, 350, 0, 400, 50);
             g.setColor(new Color(255,0,0));
             g.drawLine(0, 500, 400, 500);
         }
         else if(gameState==6) {
+            //help menu describing the different difficulties
             g.setFont(new Font("Calibri",Font.BOLD,24));
             super.paintComponent(g);
             g.drawImage(helpMenu,0,0,null);
@@ -154,26 +165,30 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
         }
     }
 
+    //sets all the variables back to "default state"
     public static void resetGame(){
         bugs=new ArrayList<Bug>();
-        currentGrav=0;
+        currentGrav=1;
         lastSpawn=0;
-        spawnInterval=0;
+        spawnInterval=25;
     }
 
     public static void bugUpdate(){
+        //updates the position of each bug and ends game if any living bug is at the bottom
         for(Bug i:bugs){
             i.update();
             if(i.yPos>=450&&!i.dead){
                 gameState=7;
             }
         }
+        //changes spawn rate and gravity based on how much score has been accumulated
         spawnInterval=25;
         if(score>=20) currentGrav=2;
         if(score>=30) spawnInterval=20;
         if(score>=40) spawnInterval=15;
         if(score>=50) spawnInterval=10;
         lastSpawn++;
+        //add a bug with random attributes initialized
         if(spawnInterval<=lastSpawn){
             tempBug = new Bug(rand.nextInt(351),0,rand.nextInt(256),false,currentGrav,"arknights");
             tempBug.getLabel(gamemode);
@@ -184,6 +199,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
     }
 
     public void run() {
+        //timer function
         while(true) {
 			repaint();
             if(gameState==5){
@@ -297,24 +313,29 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             }
         }else if(gameState==7){
             gameState=0;
+            score=0;
             paintComponent(this.getGraphics());
         }
     }
 
     public void keyTyped(KeyEvent e) {
         if(gameState==5){
+            //checks if we are in play mode and if the button pressed is between 1 and 8
             if(e.getKeyChar()>='1'&&e.getKeyChar()<='8'){
+                //if the bit was already disabled, turn it onn
                 if(!bitArr[7-(e.getKeyChar()-'1')]){
                     activeNumber+=Math.pow(2,7-(e.getKeyChar()-'1'));
                     bitArr[7-(e.getKeyChar()-'1')]=true;
                     repaint();
                 }else{
+                    //if the bit was already enabled, turn it off
                     activeNumber-=Math.pow(2,7-(e.getKeyChar()-'1'));
                     bitArr[7-(e.getKeyChar()-'1')]=false;
                     repaint();
                 }
+                //check if the bug is dead
                 for(Bug i:bugs){
-                    if(i.label==activeNumber&&!i.dead){
+                    if(i.label==activeNumber&&!i.dead&&!shootConfirm){
                         score++;
                         i.dead=true;
                         activeNumber=0;
@@ -324,10 +345,27 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                     }
                 }
             }
+            //debug command
             if(e.getKeyChar()=='/'){
                 score+=10;
             }
         }        
+    }
+
+    public void keyPressed(KeyEvent e) {
+        //if shootConfirm is enabled
+        if(e.getKeyCode()==KeyEvent.VK_ENTER&&shootConfirm){
+            for(Bug i:bugs){
+                if(i.label==activeNumber&&!i.dead){
+                    score++;
+                    i.dead=true;
+                    activeNumber=0;
+                    for(int j=0;j<8;j++){
+                        bitArr[j]=false;
+                    }
+                }
+            }
+        }
     }
 
     public void mouseExited(MouseEvent e) {
@@ -347,12 +385,6 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
         // TODO Auto-generated method stub
         
     }
