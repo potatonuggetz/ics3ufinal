@@ -10,6 +10,7 @@ import java.util.Random;
 public class flappybit extends JPanel implements Runnable,KeyListener,MouseListener{
 
     public static boolean shootConfirm=false;
+    public static boolean banOverlap=false;
     public static int mouseX;
     public static int mouseY;
     public static int difficulty=0;
@@ -33,6 +34,8 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
     * gamestate 4: difficulty menu
     * gamestate 5: ingame
     * gamestate 6: difficulty help menu
+    * gamestate 7: game over screen
+    * gamestate 8: custom base screen
     */
 
     public static BufferedImage mainMenu;    
@@ -55,6 +58,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             helpMenu=ImageIO.read(new File("helpmenu.png"));
             bug=ImageIO.read(new File("bug.png"));
             shootConfirm=filereader.pullSetting(0);
+            banOverlap=filereader.pullSetting(1);
         }catch(Exception e){};
         this.setFocusable(true);
         addKeyListener(this);
@@ -79,15 +83,31 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             helper.drawCenteredString(g,"Decimal",100,450,300,525);
         }
         else if(gameState==2) {
-            //settings menu, might honestly get rid of this but i think i might add more settings
+            //settings menu
             g.setFont(new Font("Calibri",Font.BOLD,19));
             super.paintComponent(g);
             g.drawImage(tempMenu,0,0,null);
+            //the confirm shot setting
             if(shootConfirm) g.setColor(new Color(0,255,0));
             else g.setColor(new Color(255,0,0));
             g.fillRect(100,200,200,75);
             g.setColor(new Color(0,0,0));
-            helper.drawCenteredString(g,"Confirm shot with Enter",100,200,300,275);
+            helper.drawCenteredString(g,"Confirm shot with Enter",100,200,300,250);
+            g.setFont(new Font("Calibri",Font.BOLD,13));
+            helper.drawCenteredString(g,"Lowers final score by a factor of 0.9",100,250,300,275);
+            //the banoverlap setting
+            g.setFont(new Font("Calibri",Font.BOLD,15));
+            if(banOverlap) g.setColor(new Color(0,255,0));
+            else g.setColor(new Color(255,0,0));
+            g.fillRect(100,325,200,75);
+            g.setColor(new Color(0,0,0));
+            helper.drawCenteredString(g,"Prevent bugs from overlapping",100,325,300,375);
+            g.setFont(new Font("Calibri",Font.BOLD,13));
+            helper.drawCenteredString(g,"Lowers final score by a factor of 0.8",100,375,300,400);
+            //the change base menu setting
+            g.setFont(new Font("Calibri",Font.BOLD,32));
+            g.setColor(new Color(0,0,0));
+            helper.drawCenteredString(g,"Change base",100,450,300,525);
         }
         else if(gameState==3) {
             //high score menu, shows high scores in different difficulties
@@ -163,6 +183,14 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             helper.drawCenteredString(g, "Click anywhere to continue", 0, 300, 400, 600);
             resetGame();
         }
+        else if(gameState==8){
+            //secret base change screen
+            g.setFont(new Font("Calibri",Font.BOLD,36));
+            g.setColor(new Color(0,0,0));
+            super.paintComponent(g);
+            helper.drawCenteredString(g, "Enter a base between", 0, 200, 400, 250);
+            helper.drawCenteredString(g, "2 and 32 (inclusive)", 0, 250,400, 300);
+        }
     }
 
     //sets all the variables back to "default state"
@@ -177,7 +205,10 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
         //updates the position of each bug and ends game if any living bug is at the bottom
         for(Bug i:bugs){
             i.update();
+            //bug reached the bottom, we kill the player and apply score adjustments
             if(i.yPos>=450&&!i.dead){
+                if(shootConfirm) score*=0.9;
+                if(banOverlap) score*=0.8;
                 gameState=7;
             }
         }
@@ -228,7 +259,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
         if(gameState==0){
             if(mouseX>=100&&mouseX<=300&&mouseY<=275&&mouseY>=200){
                 //clicked play
-                gameState=1;
+                gameState=4;
                 paintComponent(this.getGraphics());
             } else if(mouseX>=100&&mouseX<=300&&mouseY<=400&&mouseY>=325){
                 //clicked settings
@@ -242,22 +273,26 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
         }else if(gameState==1){
             if(mouseX>=0&&mouseX<=75&&mouseY<=600&&mouseY>=525){
                 //clicked back
-                gameState=0;
+                gameState=2;
                 paintComponent(this.getGraphics());
             }else if(mouseX>=100&&mouseX<=300&&mouseY<=275&&mouseY>=200){
                 //clicked octal
                 gamemode=8;
-                gameState=4;
+                gameState=2;
                 paintComponent(this.getGraphics());
             } else if(mouseX>=100&&mouseX<=300&&mouseY<=400&&mouseY>=325){
                 //clicked hexadecimal
                 gamemode=16;
-                gameState=4;
+                gameState=2;
                 paintComponent(this.getGraphics());
             } else if(mouseX>=100&&mouseX<=300&&mouseY<=525&&mouseY>=450){
                 //clicked decimal
                 gamemode=10;
-                gameState=4;
+                gameState=2;
+                paintComponent(this.getGraphics());
+            } else {
+                //secret custom base mode
+                gameState=8;
                 paintComponent(this.getGraphics());
             }
         }else if(gameState==2){
@@ -267,6 +302,18 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 try{
                     filereader.pushSetting(0,shootConfirm);
                 } catch(Exception e1){};
+                paintComponent(this.getGraphics());
+            } else if(mouseX>=100&&mouseX<=300&&mouseY<=400&&mouseY>=325){
+                //clicked banoverlap
+                banOverlap=!banOverlap;
+                try{
+                    filereader.pushSetting(1,banOverlap);
+                } catch(Exception e1){};
+                paintComponent(this.getGraphics());
+            }
+            else if(mouseX>=100&&mouseX<=300&&mouseY<=525&&mouseY>=450){
+                //clicked change base
+                gameState=1;
                 paintComponent(this.getGraphics());
             }
             else if(mouseX>=0&&mouseX<=75&&mouseY<=600&&mouseY>=525){
@@ -322,7 +369,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
         if(gameState==5){
             //checks if we are in play mode and if the button pressed is between 1 and 8
             if(e.getKeyChar()>='1'&&e.getKeyChar()<='8'){
-                //if the bit was already disabled, turn it onn
+                //if the bit was already disabled, turn it on
                 if(!bitArr[7-(e.getKeyChar()-'1')]){
                     activeNumber+=Math.pow(2,7-(e.getKeyChar()-'1'));
                     bitArr[7-(e.getKeyChar()-'1')]=true;
