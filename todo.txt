@@ -2,5 +2,6 @@ todo:
 
 - make main menu buttons change color when hovered over
 - make the bug toggle sprite on update
-- secret custom base mode
+- secret custom base mode implementation
 - the helper thing (medium diff)
+- actually prevent bugs from overlapping

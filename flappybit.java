@@ -19,13 +19,14 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
     public static int lastSpawn=0;
     public static int currentGrav=1;
     //which base the game will be played in
-    public static int gamemode=0;
+    public static int gamemode=16;
     public static int gameState=0;
     public static int scores[]=new int[3];
     public static ArrayList<Bug> bugs=new ArrayList<Bug>();
     public static Bug tempBug;
     public static int activeNumber=0;
     public static boolean[]bitArr=new boolean[8];
+    public static String tempString;
     static Random rand=new Random();
     /*gamestate 0: main menu
     * gamestate 1: base selection menu
@@ -146,12 +147,12 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 }
             }
             //creates the string at the bottom with the number display
-            String tempstring="";
+            tempString="";
             for(int i=7;i>=0;i--){
-                tempstring+=bitArr[i]?'1':'0';
+                tempString+=bitArr[i]?'1':'0';
             }
             //draws the binary string and the death line
-            helper.drawCenteredString(g,tempstring,0,500,400,600);
+            helper.drawCenteredString(g,tempString,0,500,400,600);
             if(difficulty==0)helper.drawCenteredString(g, Integer.toString(activeNumber,gamemode).toUpperCase(), 0, 400, 400, 500);
             helper.drawCenteredString(g, ""+score, 350, 0, 400, 50);
             g.setColor(new Color(255,0,0));
@@ -190,6 +191,10 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             super.paintComponent(g);
             helper.drawCenteredString(g, "Enter a base between", 0, 200, 400, 250);
             helper.drawCenteredString(g, "2 and 32 (inclusive)", 0, 250,400, 300);
+            g.setFont(new Font("Calibri",Font.BOLD,24));
+            helper.drawCenteredString(g, "Otherwise it will default to 10", 0,300,400, 400);
+            g.setFont(new Font("Calibri",Font.BOLD,96));
+            helper.drawCenteredString(g, tempString, 0,400,400, 600);
         }
     }
 
@@ -293,6 +298,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             } else {
                 //secret custom base mode
                 gameState=8;
+                tempString="";
                 paintComponent(this.getGraphics());
             }
         }else if(gameState==2){
@@ -330,7 +336,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
         }else if(gameState==4){
             if(mouseX>=0&&mouseX<=75&&mouseY<=600&&mouseY>=525){
                 //clicked back
-                gameState=1;
+                gameState=0;
                 paintComponent(this.getGraphics());
             }else if(mouseX>=100&&mouseX<=300&&mouseY<=275&&mouseY>=200){
                 //clicked easy
@@ -396,21 +402,36 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             if(e.getKeyChar()=='/'){
                 score+=10;
             }
-        }        
+        } else if(gameState==8){
+            //base change screen
+            if(e.getKeyChar()>='0'&&e.getKeyChar()<='9'){
+                tempString+=e.getKeyChar();
+                repaint();
+            }
+        }
     }
 
     public void keyPressed(KeyEvent e) {
         //if shootConfirm is enabled
-        if(e.getKeyCode()==KeyEvent.VK_ENTER&&shootConfirm){
-            for(Bug i:bugs){
-                if(i.label==activeNumber&&!i.dead){
-                    score++;
-                    i.dead=true;
-                    activeNumber=0;
-                    for(int j=0;j<8;j++){
-                        bitArr[j]=false;
+        if(gameState==5){
+            if(e.getKeyCode()==KeyEvent.VK_ENTER&&shootConfirm){
+                for(Bug i:bugs){
+                    if(i.label==activeNumber&&!i.dead){
+                        score++;
+                        i.dead=true;
+                        activeNumber=0;
+                        for(int j=0;j<8;j++){
+                            bitArr[j]=false;
+                        }
                     }
                 }
+            }
+        } else if(gameState==8){
+            if(e.getKeyCode()==KeyEvent.VK_ENTER){
+                gamemode=Integer.valueOf(tempString);
+                if(gamemode>32||gamemode<2) gamemode=10;
+                gameState=2;
+                repaint();
             }
         }
     }
