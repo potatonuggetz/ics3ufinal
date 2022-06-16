@@ -5,3 +5,4 @@ todo:
 - secret custom base mode implementation
 - the helper thing (medium diff)
 - actually prevent bugs from overlapping
+- score implementation

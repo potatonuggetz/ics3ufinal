@@ -114,7 +114,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             //high score menu, shows high scores in different difficulties
             g.setFont(new Font("Calibri",Font.BOLD,32));
             try {
-                scores=filereader.pullScores();
+                scores=filereader.pullScores(gamemode);
             } catch (IOException e) {}
             super.paintComponent(g);
             g.drawImage(tempMenu,0,0,null);
@@ -151,7 +151,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             for(int i=7;i>=0;i--){
                 tempString+=bitArr[i]?'1':'0';
             }
-            //draws the binary string and the death line
+            //draws the binary string and the death line 
             helper.drawCenteredString(g,tempString,0,500,400,600);
             if(difficulty==0)helper.drawCenteredString(g, Integer.toString(activeNumber,gamemode).toUpperCase(), 0, 400, 400, 500);
             helper.drawCenteredString(g, ""+score, 350, 0, 400, 50);
@@ -256,6 +256,9 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
 		myFrame.add(myPanel);
 		myFrame.pack();
 		myFrame.setVisible(true);
+        try{
+            filereader.resetScores();
+        }catch(Exception afds){}
     }
 
     public void mousePressed(MouseEvent e) {
@@ -365,6 +368,9 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 paintComponent(this.getGraphics());
             }
         }else if(gameState==7){
+            try{
+                filereader.pushScores(difficulty, score, gamemode);
+            } catch(Exception sodfhis){}
             gameState=0;
             score=0;
             paintComponent(this.getGraphics());
