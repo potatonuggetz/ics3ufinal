@@ -37,12 +37,13 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
     * gamestate 6: difficulty help menu
     * gamestate 7: game over screen
     * gamestate 8: custom base screen
+    * gamestate 9: confirm delete scores
     */
 
     public static BufferedImage mainMenu;    
     public static BufferedImage tempMenu;
     public static BufferedImage tempMenuHelp;
-    public static BufferedImage playfield;
+    public static BufferedImage garbage;
     public static BufferedImage bug;     
     public static BufferedImage helpMenu;      
 
@@ -55,7 +56,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             mainMenu=ImageIO.read(new File("mainmenu.png"));
             tempMenu=ImageIO.read(new File("tempmenu.png"));
             tempMenuHelp=ImageIO.read(new File("tempmenuhelp.png"));
-            playfield=ImageIO.read(new File("playfield.png"));
+            garbage=ImageIO.read(new File("playfield.png"));
             helpMenu=ImageIO.read(new File("helpmenu.png"));
             bug=ImageIO.read(new File("bug.png"));
             shootConfirm=filereader.pullSetting(0);
@@ -93,9 +94,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             else g.setColor(new Color(255,0,0));
             g.fillRect(100,200,200,75);
             g.setColor(new Color(0,0,0));
-            helper.drawCenteredString(g,"Confirm shot with Enter",100,200,300,250);
-            g.setFont(new Font("Calibri",Font.BOLD,13));
-            helper.drawCenteredString(g,"Lowers final score by a factor of 0.9",100,250,300,275);
+            helper.drawCenteredString(g,"Confirm shot with Enter",100,200,300,275);
             //the banoverlap setting
             g.setFont(new Font("Calibri",Font.BOLD,15));
             if(banOverlap) g.setColor(new Color(0,255,0));
@@ -122,6 +121,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             helper.drawCenteredString(g,"Easy: "+scores[0],100,200,300,275);
             helper.drawCenteredString(g,"Medium: "+scores[1],100,325,300,400);
             helper.drawCenteredString(g,"Hard: "+scores[2],100,450,300,525);
+            g.drawImage(garbage,325,525,null);
         }
         else if(gameState==4) {
             //after base selection, the difficulty menu (shows different amounts of helper guides)
@@ -196,6 +196,16 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             g.setFont(new Font("Calibri",Font.BOLD,96));
             helper.drawCenteredString(g, tempString, 0,400,400, 600);
         }
+        else if(gameState==9){
+            g.setFont(new Font("Calibri",Font.BOLD,36));
+            g.setColor(new Color(0,0,0));
+            super.paintComponent(g);
+            helper.drawCenteredString(g, "Are you sure you want to", 0, 200, 400, 250);
+            helper.drawCenteredString(g, "delete all your scores?", 0, 250,400, 300);
+            g.setFont(new Font("Calibri",Font.BOLD,24));
+            helper.drawCenteredString(g, "This cannot be undone.", 0,300,400, 400);
+            g.setFont(new Font("Calibri",Font.BOLD,96));
+        }
     }
 
     //sets all the variables back to "default state"
@@ -212,7 +222,6 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             i.update();
             //bug reached the bottom, we kill the player and apply score adjustments
             if(i.yPos>=450&&!i.dead){
-                if(shootConfirm) score*=0.9;
                 if(banOverlap) score*=0.8;
                 gameState=7;
             }
@@ -256,9 +265,6 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
 		myFrame.add(myPanel);
 		myFrame.pack();
 		myFrame.setVisible(true);
-        try{
-            filereader.resetScores();
-        }catch(Exception afds){}
     }
 
     public void mousePressed(MouseEvent e) {
@@ -334,6 +340,10 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             if(mouseX>=0&&mouseX<=75&&mouseY<=600&&mouseY>=525){
                 //clicked back
                 gameState=0;
+                paintComponent(this.getGraphics());
+            }else if(mouseX>=325&&mouseX<=400&&mouseY>=525&&mouseY<=600){
+                //clicked reset score
+                gameState=9;
                 paintComponent(this.getGraphics());
             }
         }else if(gameState==4){
@@ -414,6 +424,14 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 tempString+=e.getKeyChar();
                 repaint();
             }
+        } else if(gameState==9){
+            //reset score confirm screen
+            if(mouseX>=100&&mouseX<=300&&mouseY<=275&&mouseY>=200){
+                gameState=3;
+            }
+            try{
+                filereader.resetScores();
+            }catch(Exception adsf){}
         }
     }
 
