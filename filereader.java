@@ -1,6 +1,13 @@
 import java.util.Scanner;
 import java.io.*;
 public class filereader {
+    public static void initializeScoreFile() throws IOException{
+        Scanner sc=new Scanner(new File("scores.txt"));
+        if(!sc.hasNextInt()){
+            resetScores();
+        }
+    }
+
     //update the file of high scores with a new score
     public static void resetScores()throws IOException{
         PrintWriter p=new PrintWriter(new FileWriter("scores.txt"));

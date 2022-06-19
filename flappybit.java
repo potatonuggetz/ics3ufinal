@@ -27,6 +27,8 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
     public static int activeNumber=0;
     public static boolean[]bitArr=new boolean[8];
     public static String tempString;
+    public static int tempInt=0;
+    public static boolean noCollision=false;
     static Random rand=new Random();
     /*gamestate 0: main menu
     * gamestate 1: base selection menu
@@ -61,6 +63,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             bug=ImageIO.read(new File("bug.png"));
             shootConfirm=filereader.pullSetting(0);
             banOverlap=filereader.pullSetting(1);
+            filereader.initializeScoreFile();
         }catch(Exception e){};
         this.setFocusable(true);
         addKeyListener(this);
@@ -200,11 +203,19 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             g.setFont(new Font("Calibri",Font.BOLD,36));
             g.setColor(new Color(0,0,0));
             super.paintComponent(g);
-            helper.drawCenteredString(g, "Are you sure you want to", 0, 200, 400, 250);
-            helper.drawCenteredString(g, "delete all your scores?", 0, 250,400, 300);
+            g.setColor(new Color(255,0,0));
+            g.fillRect(25, 400, 150, 100);
+            g.setColor(new Color(0,255,0));
+            g.fillRect(225, 400, 150, 100);
+            g.setColor(new Color(0,0,0));
+            helper.drawCenteredString(g, "Are you sure you want to", 0, 100, 400, 150);
+            helper.drawCenteredString(g, "delete all your scores?", 0, 150,400, 200);
             g.setFont(new Font("Calibri",Font.BOLD,24));
-            helper.drawCenteredString(g, "This cannot be undone.", 0,300,400, 400);
+            helper.drawCenteredString(g, "This cannot be undone.", 0,200,400, 300);
             g.setFont(new Font("Calibri",Font.BOLD,96));
+            helper.drawCenteredString(g, "YES", 25,400,175, 500);
+            helper.drawCenteredString(g, "NO", 225,400,375, 500);
+
         }
     }
 
@@ -232,10 +243,24 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
         if(score>=30) spawnInterval=20;
         if(score>=40) spawnInterval=15;
         if(score>=50) spawnInterval=10;
+        if(score>=727) spawnInterval=5;
         lastSpawn++;
         //add a bug with random attributes initialized
         if(spawnInterval<=lastSpawn){
-            tempBug = new Bug(rand.nextInt(351),0,rand.nextInt(256),false,currentGrav,"arknights");
+            noCollision=!banOverlap;
+            tempInt=rand.nextInt(351);
+            //if the no bug collision gamerule is enabled, this loops through the list of bugs and makes sure it does not overlap
+            while(!noCollision){
+                noCollision=true;
+                tempInt=rand.nextInt(351);
+                for(Bug i:bugs){
+                    if(Math.abs(i.xPos-tempInt)<50&&i.yPos<50){
+                        noCollision=false;
+                        break;
+                    }
+                }
+            }
+            tempBug = new Bug(tempInt,0,rand.nextInt(256),false,currentGrav,"arknights");
             tempBug.getLabel(gamemode);
             bugs.add(tempBug);
             lastSpawn=0;
@@ -385,6 +410,17 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             score=0;
             paintComponent(this.getGraphics());
         }
+        else if(gameState==9){
+            //reset score confirm screen
+            if(mouseX>=25&&mouseX<=175&&mouseY<=500&&mouseY>=400){
+                try{
+                    filereader.resetScores();
+                }catch(Exception adsf){}
+                gameState=3;
+            } else if(mouseX>=225&&mouseX<=375&&mouseY<=500&&mouseY>=400){
+                gameState=3;
+            }
+        }
     }
 
     public void keyTyped(KeyEvent e) {
@@ -424,14 +460,6 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 tempString+=e.getKeyChar();
                 repaint();
             }
-        } else if(gameState==9){
-            //reset score confirm screen
-            if(mouseX>=100&&mouseX<=300&&mouseY<=275&&mouseY>=200){
-                gameState=3;
-            }
-            try{
-                filereader.resetScores();
-            }catch(Exception adsf){}
         }
     }
 
