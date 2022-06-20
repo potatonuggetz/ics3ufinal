@@ -2,8 +2,7 @@ import java.util.Scanner;
 import java.io.*;
 public class filereader {
     public static void initializeScoreFile() throws IOException{
-        Scanner sc=new Scanner(new File("scores.txt"));
-        if(!sc.hasNextInt()){
+        if(!new File("scores.txt").isFile()){
             resetScores();
         }
     }
