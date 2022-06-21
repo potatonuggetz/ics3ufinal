@@ -505,6 +505,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                         i.dead=true;
                         activeNumber=0;
                         for(int j=0;j<8;j++){
+                            deathState[j]=bitArr[j];
                             bitArr[j]=false;
                         }
                     }

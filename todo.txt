@@ -1,4 +1,3 @@
 todo:
 
 - make the bug toggle sprite on update
-- optimize arraylist of bugs
