@@ -45,6 +45,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
     public static BufferedImage mainMenu;    
     public static BufferedImage tempMenu;
     public static BufferedImage tempMenuHelp;
+    public static BufferedImage playfield;
     public static BufferedImage garbage;
     public static BufferedImage bug;     
     public static BufferedImage helpMenu;      
@@ -59,6 +60,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             tempMenu=ImageIO.read(new File("tempmenu.png"));
             tempMenuHelp=ImageIO.read(new File("tempmenuhelp.png"));
             garbage=ImageIO.read(new File("playfield.png"));
+            playfield=ImageIO.read(new File("playfield.png"));
             helpMenu=ImageIO.read(new File("helpmenu.png"));
             bug=ImageIO.read(new File("bug.png"));
             shootConfirm=filereader.pullSetting(0);
@@ -140,7 +142,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             //actual gameplay
             g.setFont(new Font("Calibri",Font.BOLD,24));
             super.paintComponent(g);
-            //g.drawImage(playfield,0,0,null);
+            g.drawImage(playfield,0,0,null);
             g.setColor(new Color(0,0,0));
             //loops through arraylist of all bugs, and draws its current position
             for(Bug i:bugs){
@@ -150,16 +152,17 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 }
             }
             //creates the string at the bottom with the number display
+            helper.drawCenteredString(g, "Score: "+score, 300, 0, 390, 50);
             tempString="";
+            g.setColor(new Color(255,255,255));
             for(int i=7;i>=0;i--){
-                tempString+=bitArr[i]?'1':'0';
+                if(bitArr[i]) helper.drawCenteredString(g, "1", (7-i)*50+5, 450, (7-i)*50+45, 500);
+                else helper.drawCenteredString(g, "0", (7-i)*50+5, 450, (7-i)*50+45, 500);
             }
-            //draws the binary string and the death line 
-            helper.drawCenteredString(g,tempString,0,500,400,600);
-            if(difficulty==0)helper.drawCenteredString(g, Integer.toString(activeNumber,gamemode).toUpperCase(), 0, 400, 400, 500);
-            helper.drawCenteredString(g, ""+score, 350, 0, 400, 50);
+            //draws the binary string
+            //helper.drawCenteredString(g,tempString,0,500,400,600);
+            if(difficulty==0)helper.drawCenteredString(g, Integer.toString(activeNumber,gamemode).toUpperCase(), 0, 400, 400, 450);
             g.setColor(new Color(255,0,0));
-            g.drawLine(0, 500, 400, 500);
         }
         else if(gameState==6) {
             //help menu describing the different difficulties
@@ -231,8 +234,8 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
         //updates the position of each bug and ends game if any living bug is at the bottom
         for(Bug i:bugs){
             i.update();
-            //bug reached the bottom, we kill the player and apply score adjustments
-            if(i.yPos>=450&&!i.dead){
+            //bug reached the bottom, we kill the player and apply score adjustments and end the game
+            if(i.yPos>=351&&!i.dead){
                 if(banOverlap) score*=0.8;
                 gameState=7;
             }
