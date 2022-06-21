@@ -59,7 +59,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             mainMenu=ImageIO.read(new File("mainmenu.png"));
             tempMenu=ImageIO.read(new File("tempmenu.png"));
             tempMenuHelp=ImageIO.read(new File("tempmenuhelp.png"));
-            garbage=ImageIO.read(new File("playfield.png"));
+            garbage=ImageIO.read(new File("garbage.png"));
             playfield=ImageIO.read(new File("playfield.png"));
             helpMenu=ImageIO.read(new File("helpmenu.png"));
             bug=ImageIO.read(new File("bug.png"));
@@ -156,9 +156,18 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             tempString="";
             g.setColor(new Color(255,255,255));
             for(int i=7;i>=0;i--){
+                //puts the number in the correct box, as each box is 50 pixels apart with 5 pixels at the beginning
                 if(bitArr[i]) helper.drawCenteredString(g, "1", (7-i)*50+5, 450, (7-i)*50+45, 500);
                 else helper.drawCenteredString(g, "0", (7-i)*50+5, 450, (7-i)*50+45, 500);
             }
+            g.setFont(new Font("Calibri",Font.BOLD,16));
+            if(difficulty<2){
+                for(int i=7;i>=0;i--){
+                    //puts the equivalent value of a number above the box
+                    helper.drawCenteredString(g, ""+Integer.toString((int)Math.pow(2, i), gamemode), (7-i)*50+5, 450, (7-i)*50+45, 460);
+                }
+            }
+            
             //draws the binary string
             //helper.drawCenteredString(g,tempString,0,500,400,600);
             if(difficulty==0)helper.drawCenteredString(g, Integer.toString(activeNumber,gamemode).toUpperCase(), 0, 400, 400, 450);
