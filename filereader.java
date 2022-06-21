@@ -18,6 +18,7 @@ public class filereader {
         }
         p.close();
     }
+    //pushes any new scores to the file
     public static void pushScores(int x,int y,int z) throws IOException{
         int[][] scores = new int[33][3];
         Scanner sc=new Scanner(new File("scores.txt"));
@@ -37,6 +38,7 @@ public class filereader {
         }
         p.close();
     }
+    //retrieves high scores
     public static int[] pullScores(int x) throws IOException{
         int[]scores = new int[3];
         Scanner sc=new Scanner(new File("scores.txt"));
@@ -51,6 +53,7 @@ public class filereader {
         sc.close();
         return scores;
     }
+    //gets a setting from the file
     public static boolean pullSetting(int x) throws IOException{
         boolean[] settings = new boolean[3];
         Scanner sc=new Scanner(new File("settings.txt"));
@@ -63,7 +66,7 @@ public class filereader {
         sc.close();
         return settings[x];
     }
-
+    //pushes a setting to the file
     public static void pushSetting(int x,boolean y) throws IOException{
         Scanner sc=new Scanner(new File("settings.txt"));
         boolean[] settings = new boolean[3];

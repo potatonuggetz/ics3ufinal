@@ -1,6 +1,7 @@
 import java.awt.*;
 
 public class helper {
+    //draws a string at the center of a bounding box
     public static void drawCenteredString(Graphics g, String text, int ulx, int uly, int brx, int bry) {
         Font font=g.getFont();
         FontMetrics metrics = g.getFontMetrics(font);

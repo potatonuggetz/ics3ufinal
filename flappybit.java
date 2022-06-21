@@ -228,6 +228,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             helper.drawCenteredString(g, tempString, 0,400,400, 600);
         }
         else if(gameState==9){
+            //score reset screen
             g.setFont(new Font("Calibri",Font.BOLD,36));
             g.setColor(new Color(0,0,0));
             super.paintComponent(g);
