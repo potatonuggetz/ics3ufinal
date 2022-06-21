@@ -1,6 +1,4 @@
 todo:
 
-- make main menu buttons change color when hovered over
 - make the bug toggle sprite on update
-- the helper thing (medium diff)
 - optimize arraylist of bugs

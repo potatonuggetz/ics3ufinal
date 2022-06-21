@@ -23,12 +23,14 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
     public static int gameState=0;
     public static int scores[]=new int[3];
     public static ArrayList<Bug> bugs=new ArrayList<Bug>();
+    public static ArrayList<Integer> toBeRemoved=new ArrayList<Integer>();
     public static Bug tempBug;
     public static int activeNumber=0;
     public static boolean[]bitArr=new boolean[8];
     public static String tempString;
     public static int tempInt=0;
     public static boolean noCollision=false;
+    public static boolean[]deathState=new boolean[8];
     static Random rand=new Random();
     /*gamestate 0: main menu
     * gamestate 1: base selection menu
@@ -146,11 +148,22 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             g.setColor(new Color(0,0,0));
             //loops through arraylist of all bugs, and draws its current position
             for(Bug i:bugs){
-                if(!i.dead){
+                if(i.deadTimer!=0){   
+                    g.setColor(new Color(0,0,0));
                     g.drawImage(bug,i.xPos,i.yPos,null);
                     helper.drawCenteredString(g,i.str,i.xPos,i.yPos,i.xPos+50,i.yPos+50);
+                } if(i.dead){
+                    //if bug is dead, draw green laser lines pointing to its "corpse"
+                    g.setColor(new Color(0,255,0));
+                    for(int j=7;j>=0;j--){
+                        if(deathState[j]){
+                            g.drawLine((7-j)*50+25, 450, i.xPos+24, 400);
+                        }
+                    }
+                    g.drawLine(i.xPos+24, 400, i.xPos+24, i.yPos+50);
                 }
             }
+            g.setColor(new Color(0,0,0));
             //creates the string at the bottom with the number display
             helper.drawCenteredString(g, "Score: "+score, 300, 0, 390, 50);
             tempString="";
@@ -168,8 +181,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 }
             }
             
-            //draws the binary string
-            //helper.drawCenteredString(g,tempString,0,500,400,600);
+            //draws the helper string showing current value 
             if(difficulty==0)helper.drawCenteredString(g, Integer.toString(activeNumber,gamemode).toUpperCase(), 0, 400, 400, 450);
             g.setColor(new Color(255,0,0));
         }
@@ -248,7 +260,10 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                 if(banOverlap) score*=0.8;
                 gameState=7;
             }
+            if(i.deadTimer==0) toBeRemoved.add(bugs.indexOf(i));
         }
+        for(int i:toBeRemoved) bugs.remove(i);
+        toBeRemoved=new ArrayList<Integer>();
         //changes spawn rate and gravity based on how much score has been accumulated
         spawnInterval=25;
         if(score>=20) currentGrav=2;
@@ -457,6 +472,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
                         i.dead=true;
                         activeNumber=0;
                         for(int j=0;j<8;j++){
+                            deathState[j]=bitArr[j];
                             bitArr[j]=false;
                         }
                     }

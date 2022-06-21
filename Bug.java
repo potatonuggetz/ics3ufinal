@@ -6,6 +6,7 @@ public class Bug {
     boolean dead;
     int gravity;
     String str;
+    int deadTimer;
 
     //object constructor
     public Bug(int a,int b,int c,boolean d,int e,String f){
@@ -15,11 +16,13 @@ public class Bug {
         dead=d;
         gravity=e;
         str=f;
+        deadTimer=20;
     }
 
     //lowers the y position by the gravity attribute of the specific bug
     public void update(){
         if(!dead) yPos+=gravity;
+        else deadTimer--;
         //toggle sprite
     }
 
