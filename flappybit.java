@@ -50,7 +50,9 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
     public static BufferedImage playfield;
     public static BufferedImage garbage;
     public static BufferedImage bug;     
-    public static BufferedImage helpMenu;      
+    public static BufferedImage helpMenu;
+    public static BufferedImage troll;      
+      
 
     public flappybit(){
         setPreferredSize(new Dimension(400,600));
@@ -65,6 +67,7 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
             playfield=ImageIO.read(new File("playfield.png"));
             helpMenu=ImageIO.read(new File("helpmenu.png"));
             bug=ImageIO.read(new File("bug.png"));
+            troll=ImageIO.read(new File("troll.png"));
             shootConfirm=filereader.pullSetting(0);
             banOverlap=filereader.pullSetting(1);
             filereader.initializeScoreFile();
@@ -214,8 +217,9 @@ public class flappybit extends JPanel implements Runnable,KeyListener,MouseListe
         else if(gameState==8){
             //secret base change screen
             g.setFont(new Font("Calibri",Font.BOLD,36));
-            g.setColor(new Color(0,0,0));
+            g.setColor(new Color(0,255,0));
             super.paintComponent(g);
+            g.drawImage(troll,0,0,null);
             helper.drawCenteredString(g, "Enter a base between", 0, 200, 400, 250);
             helper.drawCenteredString(g, "2 and 32 (inclusive)", 0, 250,400, 300);
             g.setFont(new Font("Calibri",Font.BOLD,24));
